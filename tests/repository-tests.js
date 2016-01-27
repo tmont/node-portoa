@@ -4,7 +4,6 @@ import Sequelize from 'sequelize';
 import { Logger } from 'looger';
 import { stub } from 'sinon';
 
-
 describe('Repository', () => {
 	let sequelize;
 	let Foo;

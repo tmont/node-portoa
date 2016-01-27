@@ -13,10 +13,8 @@
 		"test": "node_modules/.bin/mocha --compilers js:babel-register -R spec tests"
 	},
 	"dependencies": {
-		"chalk": "1.1.1"
-	},
-	"peerDependencies": {
-		"sequelize": "3.x"
+		"chalk": "1.1.1",
+		"extend": "3.0.0"
 	},
 	"devDependencies": {
 		"babel-cli": "6.4.5",
@@ -24,9 +22,11 @@
 		"babel-register": "6.4.3",
 		"deo-build": "0.0.3",
 		"expect.js": "0.3.1",
+		"express": "4.x",
+		"jade": "1.x",
 		"looger": "*",
 		"mocha": "2.3.4",
-		"pg": "*",
+		"pg": "4.x",
 		"sequelize": "3.x",
 		"sinon": "1.17.2"
 	}
