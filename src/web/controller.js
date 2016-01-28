@@ -20,12 +20,9 @@ export default class Controller {
 		this.next = this.context.next;
 
 		this.templateDir = templateOptions.templateDir;
-		this.includes = templateOptions.includes;
+		this.includes = templateOptions.includes || [];
 		this.masterPath = templateOptions.masterPath;
-		this.jadeOptions = templateOptions.jadeOptions || {
-			pretty: true,
-			compileDebug: true
-		};
+		this.jadeOptions = templateOptions.jadeOptions || {};
 	}
 
 	setHeader(name, value) {
@@ -84,21 +81,21 @@ export default class Controller {
 		}
 		if (!viewName || typeof(viewName) === 'object') {
 			params = viewName;
-			viewName = hyphenate(this.context.controllerPrefix) + '/' + hyphenate(this.context.actionKey.toString());
+			viewName = hyphenate(this.context.controllerPrefix || 'default') + '/' +
+				hyphenate(this.context.actionKey.toString());
 		}
 
 		status = status || 200;
+		params = extend({}, params || {});
 
-		params = Object.assign({}, params || {});
-
-		Object.keys(res.locals).forEach(function(key) {
+		Object.keys(res.locals || {}).forEach(function(key) {
 			if (!(key in params)) {
 				params[key] = res.locals[key];
 			}
 		});
 
 		function compile(source, filename) {
-			return jade.compile(source, Object.assign({
+			return jade.compile(source, extend({
 				filename: filename,
 				basedir: '/',
 				pretty: true,
