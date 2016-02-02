@@ -9,7 +9,7 @@ try {
 } catch (e) {}
 
 export default class Controller {
-	constructor(/** ControllerContext */context, /** TemplateOptions */templateOptions) {
+	constructor(context, templateOptions) {
 		if (!jade) {
 			throw new Error('jade module is not available');
 		}
@@ -18,6 +18,7 @@ export default class Controller {
 		this.req = this.context.req;
 		this.res = this.context.res;
 		this.next = this.context.next;
+		this.log = this.context.log;
 
 		this.templateDir = templateOptions.templateDir;
 		this.includes = templateOptions.includes || [];
@@ -35,6 +36,12 @@ export default class Controller {
 
 	setStatus(status) {
 		this.res.status(status);
+	}
+
+	missingAction(actionKey) {
+		const controllerName = this.constructor.name;
+		const message = `No action found for ${actionKey} on ${controllerName}`;
+		this.render('errors/404', { message: message }, 404);
 	}
 
 	json(obj) {
@@ -128,7 +135,11 @@ export default class Controller {
 			try {
 				templateHtml = compileTemplate();
 			} catch (e) {
-				this.next(e);
+				this.log.error('Failed to compile template', e);
+				const err = new Error('Failed to compile template: ' + e.message);
+				err.code = 'templateCompilation';
+				err.thrown = e;
+				this.next(err);
 				return;
 			}
 
@@ -147,7 +158,11 @@ export default class Controller {
 		try {
 			html = compileTemplateWithMaster();
 		} catch (e) {
-			this.next(e);
+			this.log.error('Failed to compile template', e);
+			const err = new Error('Failed to compile template: ' + e.message);
+			err.code = 'templateCompilation';
+			err.thrown = e;
+			this.next(err);
 			return;
 		}
 

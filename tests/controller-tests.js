@@ -135,5 +135,27 @@ describe('Controller', () => {
 				'\n<html>\n  <body>\n    <p>this is the template</p>\n  </body>\n</html>'
 			);
 		});
+
+		it('should render 404 error for missing controller action', () => {
+			const basedir = path.join(__dirname, 'files', 'jade');
+			const context = fakeContext();
+			context.req.isContentRequest = false;
+			const controller = new Controller(context, {
+				templateDir: path.join(basedir, 'templates'),
+				masterPath: path.join(basedir, 'master.jade'),
+				includes: [
+					path.join(basedir, 'include1.jade'),
+					path.join(basedir, 'include2.jade')
+				]
+			});
+
+			controller.missingAction('yarp');
+			expect(context.res.status).to.have.property('callCount', 1);
+			expect(context.res.status.getCall(0).args).to.eql([ 404 ]);
+			expect(context.res.send).to.have.property('callCount', 1);
+			expect(context.res.send.getCall(0).args[0]).to.eql(
+					'\n<html>\n  <body>\n    <p>No action found for yarp on Controller</p>\n  </body>\n</html>'
+			);
+		});
 	});
 });

@@ -1,3 +1,6 @@
+import extend from 'extend';
+import Controller from './controller';
+
 export default class Router {
 	constructor(app) {
 		this.app = app;
@@ -9,6 +12,18 @@ export default class Router {
 			if (!container) {
 				next(new Error('No container attached to request!'));
 				return;
+			}
+
+			const log = container.resolveSync('Log');
+
+			function sendError(message) {
+				res.status(500);
+				if (req.isContentRequest) {
+					res.json({message: message});
+					return;
+				}
+
+				res.send(message);
 			}
 
 			const controllerContext = {
@@ -23,23 +38,24 @@ export default class Router {
 
 			container.resolve(controllerPrefix + 'Controller', (err, controller) => {
 				if (err) {
-					next(err);
+					log.error(err);
+					sendError(`No controller found for "${controllerPrefix}"`);
 					return;
 				}
 
-				container.resolve(actionKey, (err, handler) => {
-					if (err) {
-						next(err);
-						return;
-					}
+				const action = controller[actionKey];
+				if (typeof(action) !== 'function') {
+					controller.missingAction(actionKey);
+					return;
+				}
 
-					controller.executeHandler(handler);
-				});
+				const params = extend({}, req.params, req.query, req.body);
+				action.call(controller, params);
 			});
 		};
 	}
 
-	templatedGet(controllerPrefix, actionKey, url) {
+	templatedGet(url, controllerPrefix, actionKey) {
 		function setContent(req, res, next) {
 			req.isContentRequest = /\.content$/.test(req.url);
 			next();

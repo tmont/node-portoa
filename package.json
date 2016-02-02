@@ -10,7 +10,7 @@
 	"files": [ "dist" ],
 	"main": "dist/index.js",
 	"scripts": {
-		"test": "node_modules/.bin/mocha --compilers js:babel-register -R spec tests"
+		"test": "node_modules/.bin/mocha --opts tests/mocha.opts tests"
 	},
 	"dependencies": {
 		"chalk": "1.1.1",
@@ -27,6 +27,7 @@
 		"looger": "*",
 		"mocha": "2.3.4",
 		"pg": "4.x",
+		"sahara": "2.x",
 		"sequelize": "3.x",
 		"sinon": "1.17.2"
 	}
