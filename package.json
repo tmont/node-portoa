@@ -16,6 +16,11 @@
 		"chalk": "1.1.1",
 		"extend": "3.0.0"
 	},
+	"peerDependencies": {
+		"sahara": "2.x",
+		"sequelize": "3.x",
+		"express": "4.x"
+	},
 	"devDependencies": {
 		"babel-cli": "6.4.5",
 		"babel-preset-es2015": "6.3.13",
